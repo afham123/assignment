@@ -1,8 +1,19 @@
 package main
 import "fmt"
+import "strconv"
 
 func main(){
-    n := int64(255)
-    h := fmt.Sprintf("%x", n)
-    fmt.Printf("%s", h)
+    n := 280
+    
+    var res = ""
+    for (n>0){
+        r := (n%16)
+        if r > 9{
+            res=  string(87 + r) + res 
+        }else{
+            res=strconv.Itoa(r)+res
+        }
+        n/=16
+    }
+    fmt.Printf(res)
 }
