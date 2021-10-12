@@ -6,3 +6,7 @@ Hashing is the process of scrambling a piece of information or data beyond recog
 In this project we will be using hashing to insure our data intigrity. We will initially pass our original data to hashing function which grenerate a hash value and it will be stored in our data base in the severs. If any changes or modification will be their in the data we will recalculate the hash value of modified data and if we does matches our hash value which as been stored we will restore back to its initiall form and in this way we can insure that nobody could modify or delete our data. 
 
 ![Image](https://user-images.githubusercontent.com/49563140/136780339-4bc8e5cb-7bbd-4be9-85e4-ed3b8a0d7f67.png)
+
+
+### Hashing algorithms
+![Image1](https://user-images.githubusercontent.com/49563140/136897940-b9b45c00-bc9f-47bf-9815-87f9442d1406.png)
