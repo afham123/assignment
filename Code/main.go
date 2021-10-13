@@ -38,19 +38,21 @@ func break_512(st string) map[int]string{
     return res
 }
 
-//Function to take text and convert it into binary and padd zeros in the begining and add length of 
+//Function to take text and convert it into binary add padd zeros in the begining and add length of 
 //text at the end of the binary and create Message Blocks by dividing it into a blocks of 512 bits.
 func messageBlocks(text string) map[int]string{
 
-    res := textToBinary(text) + binary(len(text))
+    res := textToBinary(text) 
+    size :=binary(len(text))
     
     t:= ""
-    for i:=0; i<(512-(len(res)%512)) ; i++{
+    for i:=0; i<(512-(len(res)%512))-len(size)-1 ; i++{
         t = "0" + t
     }
-    res = t+res
-    
+
+    res = res + "1" + t + size
     result := break_512(res)
+
     return result
 }
 
