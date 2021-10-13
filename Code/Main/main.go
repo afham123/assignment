@@ -56,15 +56,24 @@ func messageBlocks(text string) map[int]string{
     return result
 }
 
+// Function to display Message Blocks
+func display(messBlock map[int]string){
+  fmt.Println("Message Blocks")
+    
+    for i:=1;i<=len(messBlock);i++{
+      fmt.Println("Block " + strconv.Itoa(i) + " : " + messBlock[i])
+    }
+}
+
 // Driver function
 func main(){
     
     res := "Main function"
     fmt.Println(res)
     
-    text := "My name is Afham Fardeen. I am Pursuing Bachelor of Engineering and studing in The University Institute of Technology, Burdwan University."
+    text := "My name is Afham Fardeen. I am Pursuing Bachelor of Engineering from The University Institute of Technology, Burdwan University."
     fmt.Println("Original Text : "+text)
     
-    fmt.Println("Message Blocks")
-    fmt.Println(messageBlocks(text))
+    messBlock := messageBlocks(text)
+    display(messBlock)
 }
