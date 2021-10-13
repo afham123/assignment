@@ -30,7 +30,6 @@ func add(a string, b string) string {
 		i--
 		k--
 	}
-
 	if c > 0 {
 		res[k] = strconv.Itoa(c)
 	}
