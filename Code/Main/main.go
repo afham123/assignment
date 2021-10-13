@@ -1,79 +1,55 @@
 package main
-import "fmt"
-import "strconv"
 
-//function to convert decimal to binary 
-func binary(n int) string{
-    var res = ""
-    for (n>0){
-        r := (n%2)
-        res=strconv.Itoa(r)+res
-        n/=2
-    }
-    return res
+import (
+    "crypto/sha256"
+    "fmt"
+)
+
+type KVStore interface {
+    
+	// Given a key, retrieve the corresponding value from the store.
+	Get(key string) (value []byte, exists bool)
+	
+	// Save the given value for the given key into store.
+	Put(key string, value []byte)
+	
+	// Delete the given key from the store.
+	Delete(key string)
+	
+	// Calculate the fingerprint for the store. Any two stores which have the same data, should have the same fingerprint, and vice-versa.
+	Fingerprint() []byte
+}
+func Get(key string) (value []byte, exists bool) {
+    
+    exit := true
+    var val [5]byte
+    
+    return val,exit
+}
+func Put(key string, value []byte){
+    
+    
+}
+func Delete(key string){
+    
+
+}
+func Fingerprint() []byte{
+    
+    var val [5]byte
+    
+    return val
 }
 
-// function to convert text to binary 
-func textToBinary(text string) string{
-    res := ""
-    
-    for i:=0; i<len(text); i++{
-        res = res + binary(int(text[i]))
-    }
-    
-    res = res + binary(len(text))
-    return res
-}
 
-// function to break the text into a blocks of 512 bits each.
-func break_512(st string) map[int]string{
+func main() {
     
-    res := make(map[int]string)
+    text = "This is Afham fardeen"
+    text1 = text1+"m"
+    sh := sha256.Sum256([]byte(text))
+    sh1 := sha256.Sum256([]byte(text1))
+    fmt.Printf("%x\n", sh)
+    fmt.Printf("%x", sh1)
     
-    for i:=1; i<=len(st)/512; i++{
-        
-        res[i] = st[(i-1)*512:i*512]
-    }
-        
-    return res
-}
-
-//Function to take text and convert it into binary add padd zeros in the begining and add length of 
-//text at the end of the binary and create Message Blocks by dividing it into a blocks of 512 bits.
-func messageBlocks(text string) map[int]string{
-
-    res := textToBinary(text) 
-    size :=binary(len(text))
     
-    t:= ""
-    for i:=0; i<(512-(len(res)%512))-len(size)-1 ; i++{
-        t = "0" + t
-    }
-
-    res = res + "1" + t + size
-    result := break_512(res)
-
-    return result
-}
-
-// Function to display Message Blocks
-func display(messBlock map[int]string){
-  fmt.Println("Message Blocks")
-    
-    for i:=1;i<=len(messBlock);i++{
-      fmt.Println("Block " + strconv.Itoa(i) + " : " + messBlock[i])
-    }
-}
-
-// Driver function
-func main(){
-    
-    res := "Main function"
-    fmt.Println(res)
-    
-    text := "My name is Afham Fardeen. I am Pursuing Bachelor of Engineering from The University Institute of Technology, Burdwan University."
-    fmt.Println("Original Text : "+text)
-    
-    messBlock := messageBlocks(text)
-    display(messBlock)
 }
