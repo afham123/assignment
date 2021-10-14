@@ -8,21 +8,22 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/csv"
-	//"log"
+	"log"
 )
 
-
+// struct to store keyvalue and hash file.
 type Data struct {
     val string
     hash string
 }
 
+//struct to store userid password
 type authentication struct {
     password string
 }
 
 var keyValue = map[string]Data{}  // Hash map to store key(dates in string) and its news content(in string type) and its hash value(in string type)
-var authentication = map[string]authentication{}
+var authentication = map[string]authentication{}  // Hash map to store userid password.
 
 
 //Function that takes key, value pair as an argument and 
@@ -36,19 +37,81 @@ func Put(key string, value string){
     //fmt.Println(sha)
     var n Data 
     
-    n.val = value //storing key value in keyValue hash map
-    n.hash = sha  // storing key hash in keyValue hash map 
+    n.val = value //storing key value in keyValue hash map.
+    n.hash = sha  // storing key hash in keyValue hash map.
     
     keyValue[key] = n
+    
+    save()   // Saving the changes.
 }
+
+//Function to readin CSV file.
+func readCsvFile(filePath string) [][]string {
+    f, err := os.Open(filePath)
+    if err != nil {
+        log.Fatal("Unable to read input file " + filePath, err)
+    }
+    defer f.Close()
+
+    csvReader := csv.NewReader(f)
+    records, err := csvReader.ReadAll()
+    if err != nil {
+        log.Fatal("Unable to parse file as CSV for " + filePath, err)
+    }
+    return records
+}
+
+//Function to read local data.
+func read(){
+    
+    data = readCsvFile()
+    
+    
+    
+    
+    
+}
+
 
 
 // Function to return news contnet and its Hash Value
 func Get(key string) string{
     
-    if[]
+    if Fingerprint(key,keyValue[key]){
+        return keyValue[key]
+    }else{
+        Delete(key)
+        update()
+        return 
+    }
+}
+
+
+//Update with new value
+func update(key string, val string){
     
-    return keyValue[key].val
+    h := sha256.New()
+    h.Write([]byte(value))
+    sha := base64.URLEncoding.EncodeToString(h.Sum(nil))
+    
+    n := keyValue[key]
+    n.val = val
+    n.hash = sha
+    keyValue[key] = n
+}
+
+//Function to check the fingerprint and return a boolean result.
+// That is true if mached and false if does not matched.
+func Fingerprint(key string, val string) bool{
+    
+    h := sha256.New()
+    h.Write([]byte(value))
+    sha := base64.URLEncoding.EncodeToString(h.Sum(nil))
+    
+    if keyValue[key].hash == sha { // will be false if hash value of original content matches the hash value of news content.
+        return true
+    }
+    return false
 }
 
 // Delete the given key from the store
@@ -90,6 +153,7 @@ func save(){
     }
 }
 
+//Function for userid password verification 
 func check( usid string, pass string)bool{
     
     if authentication[usid] { // will be false if userid is not in the map
@@ -105,15 +169,19 @@ func check( usid string, pass string)bool{
 // Driver Function
 func main() {
   
+  
+    authentication["arijit.Das"].password = "UITBU.Arijit" // Adding user id and password
+    // Reading the local csv data.
+    
     reader := bufio.NewReader(os.Stdin)
     
+    fmt.Println("Switch Case")
     fmt.Println("Enter 1 to add new Data")
     fmt.Println("Enter 2 to read news")
     fmt.Println("Enter 3 to exit")
     num := readNum(reader)   
     
-    while(num !=3)
-    {
+    for num !=3{
         switch num {
         case 1:
             fmt.Printf("Enter user : ")
@@ -142,27 +210,11 @@ func main() {
             fmt.Println("Wrong choice Entered")
         }
         if num == 3{
-            break
+            break            // Breaking the switch case if the user enters 3
         }else{
             num = readNum(reader)
         }
     }
-    
-    //fmt.Println(keyValue)
-    save()
-    
-    key := readString(reader)     // Enter the key(date) that Admin wants to see.
-    news,hash := Get(key)
-    
-    // Displaying contents
-    fmt.Println("News content for date "+key+"  :  "+news)
-    fmt.Println("Hash Value of news : "+hash)
-    
-    key = readString(reader)     // Enter the key(date) that Admin wants to Delete.
-    Delete(key)
-    
-    //fmt.Println(keyValue)
-    save()
 }
 
 // Reading input functions
