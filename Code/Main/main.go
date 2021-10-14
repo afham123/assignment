@@ -12,21 +12,27 @@ import (
 var keyValue map[string]string
 var keyHash map[string]string
 
+
 //Function that takes key, value pair as an argument and 
 //store it in key,value in keyValue hash map key hash in keyHash hash map 
 func Put(key string, value string){
     
+    if keyValue == nil {
+        keyValue = make(map[string]string)
+    }
+    
+    if keyHash == nil {
+        keyHash = make(map[string]string)
+    }
+    
     h := sha256.New()
     h.Write([]byte(value))
-    
     sha := base64.URLEncoding.EncodeToString(h.Sum(nil))
     
-    fmt.Println(sha)
+    //fmt.Println(sha)
     keyValue[key] = value //storing key value in keyValue hash map
     keyHash[key] = sha  // storing key hash in keyHash hash map 
 }
-
-
 
 func main() {
   
