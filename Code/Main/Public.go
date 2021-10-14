@@ -34,7 +34,6 @@ func Put(key string, value string){
     h.Write([]byte(value))
     sha := base64.URLEncoding.EncodeToString(h.Sum(nil))
     
-    //fmt.Println(sha)
     var n Data 
     
     n.val = value //storing key value in keyValue hash map.
@@ -46,37 +45,43 @@ func Put(key string, value string){
     save()   // Saving the changes.
 }
 
-//Function to readin CSV file.
-func readCsvFile(filePath string) [][]string {
-    f, err := os.Open(filePath)
+//Function to readin CSV file(local data).
+func CSVFileToMap() map[string]string{}{
+
+    filePath := "export.csv"
+    // read csv file
+    csvfile, err := os.Open(filePath)
     if err != nil {
-        log.Fatal("Unable to read input file " + filePath, err)
+        return nil
     }
-    defer f.Close()
 
-    csvReader := csv.NewReader(f)
-    records, err := csvReader.ReadAll()
+    defer csvfile.Close()
+    reader := csv.NewReader(csvfile)
+
+    rawCSVdata, err := reader.ReadAll()
     if err != nil {
-        log.Fatal("Unable to parse file as CSV for " + filePath, err)
+        return nil
     }
-    return records
+
+    header := []string{} // holds first row (header)
+    for lineNum, record := range rawCSVdata {
+
+        // for first row, build the header slice
+        if lineNum == 0 {
+            for i := 0; i < len(record); i++ {
+                header = append(header, strings.TrimSpace(record[i]))
+            }
+        } else {
+            // for each cell, map[string]string k=header v=value
+            line := map[string]string{}
+            for i := 0; i < len(record); i++ {
+                line[header[i]] = record[i]
+            }
+            returnMap = append(returnMap, line)
+        }
+    }
+    return returnMap
 }
-
-//Function to read local data.
-func read(){
-    
-    data = readCsvFile()
-    
-    //....
-
-
-    //Under work
-
-    ....///    
-    
-}
-
-
 
 // Function to return news contnet and its Hash Value
 func Get(key string) string{
