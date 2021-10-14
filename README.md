@@ -1,14 +1,11 @@
 # assignment
 
-## Hashing
-Hashing is the process of scrambling a piece of information or data beyond recognition. We use hash function to convert input into hash Digest. These functions are irreversible by design. The value generated after passing the plane text information through the hash function is called the hash value digest or just the hash of the original data.  Hashes are made to be irreversible and no discription key can convert a digest back to its original plane text value. There are few hasing algorithms that still stands undecodable and are used for password storage and integrity verification, etc. 
+For implement of an efficient in-memory Verifiable KV-Store what we will do is that we will be creating two program, first administrator.go which only admin can access and the other public.go which everyone can access. 
 
-In this project we will be using hashing to insure our data intigrity. We will initially pass our original data to hashing function which grenerate a hash value and it will be stored in our data base in the severs. If any changes or modification will be their in the data we will recalculate the hash value of modified data and if we does matches our hash value which as been stored we will restore back to its initiall form and in this way we can insure that nobody could modify or delete our data. 
+## administrator.go
+In this program we will first take all the news of past and store its content and its hash value locally in our system so that the content could be kept save with us. No third party could change it. Also the locally save information could be used for the verification of the news content before serving it to any news reader.
 
-![Image](https://user-images.githubusercontent.com/49563140/136780339-4bc8e5cb-7bbd-4be9-85e4-ed3b8a0d7f67.png)
-
-
-### Hashing algorithms(SHA 256)
-
-We will be using SHA 256 algorithm for  implement an efficient in-memory Verifiable. The algoritm will prduce a digest is of length 256 bits. The digest produce will be irreversible that is no method or function will be able to retrieve the original text even when the digest is passed through the hash same hash function. In this way we can create a digest of all original news content and store it in our database. If any changes will be made in the news paper its digest is mached with the original news digest and if we found the digest to be dissimilar. We could be able to know that the news contnet have been chnaged. In that case we can resore it to original content.
-![Image1](https://user-images.githubusercontent.com/49563140/136897940-b9b45c00-bc9f-47bf-9815-87f9442d1406.png)
+## public.go
+We will be creating a program public.go which has news data which is accessable to all. As its data is accessable to public, it has a very high risk that its content could be changed by some malicious actions. To prevent this we will checking news content before every serve. For verification we will be checking the hash values to be time efficient. If we found that the news that is being served to the user has been changed even slightly, the program will instantly restore it with the original content with the help of locally saved news content and then serve it to the user. 
+    
+Also the admin can add the new news to the public data with the help of userid and password.
