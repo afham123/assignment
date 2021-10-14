@@ -11,19 +11,19 @@ import (
 	"log"
 )
 
-// struct to store keyvalue and hash file.
+
 type Data struct {
     val string
     hash string
 }
 
-//struct to store userid password
 type authentication struct {
     password string
 }
 
 var keyValue = map[string]Data{}  // Hash map to store key(dates in string) and its news content(in string type) and its hash value(in string type)
-var authentication = map[string]authentication{}  // Hash map to store userid password.
+var authentication = map[string]authentication{}    // Hash map to store userid password.
+var LocalkeyValue = map[string]Data{}   //Local keyValue data.
 
 
 //Function that takes key, value pair as an argument and 
@@ -40,6 +40,7 @@ func Put(key string, value string){
     n.val = value //storing key value in keyValue hash map.
     n.hash = sha  // storing key hash in keyValue hash map.
     
+    LocalkeyValue[key] = n
     keyValue[key] = n
     
     save()   // Saving the changes.
@@ -66,9 +67,12 @@ func read(){
     
     data = readCsvFile()
     
-    
-    
-    
+    //....
+
+
+    //Under work
+
+    ....///    
     
 }
 
@@ -77,12 +81,12 @@ func read(){
 // Function to return news contnet and its Hash Value
 func Get(key string) string{
     
-    if Fingerprint(key,keyValue[key]){
-        return keyValue[key]
+    if Fingerprint(key,keyValue[key].val){
+        return keyValue[key].val
     }else{
         Delete(key)
-        update()
-        return 
+        update(key, LocalkeyValue[key].val)
+        return keyValue[key].val
     }
 }
 
@@ -108,7 +112,7 @@ func Fingerprint(key string, val string) bool{
     h.Write([]byte(value))
     sha := base64.URLEncoding.EncodeToString(h.Sum(nil))
     
-    if keyValue[key].hash == sha { // will be false if hash value of original content matches the hash value of news content.
+    if LocalkeyValue[key].hash == sha { // will be false if hash value of original content matches the hash value of news content.
         return true
     }
     return false
@@ -140,14 +144,14 @@ func save(){
     // write column headers
     writer.Write(headers)
     
-    for key := range keyValue {
+    for key := range LocalkeyValue {
     
         r := make([]string, 0, 1+len(headers)) // capacity of 4, 1 + the number of properties your struct has & the number of column headers you are passing
         r = append(
             r,
             key,
-            keyValue[key].val,
-            keyValue[key].hash,
+            LocalkeyValue[key].val,
+            LocalkeyValue[key].hash,
         )
         writer.Write(r)
     }
@@ -171,7 +175,7 @@ func main() {
   
   
     authentication["arijit.Das"].password = "UITBU.Arijit" // Adding user id and password
-    // Reading the local csv data.
+    read()// Reading the local csv data.
     
     reader := bufio.NewReader(os.Stdin)
     
