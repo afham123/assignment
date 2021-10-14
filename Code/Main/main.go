@@ -35,11 +35,13 @@ func Put(key string, value string){
 }
 
 // Function to return actual news and its Hash Value
-func Get(key string)string{
+func Get(key string) (string, string){
+    
     return keyValue[key],keyHash[key]
 }
 
 
+// Driver Function
 func main() {
   
   
@@ -61,7 +63,11 @@ func main() {
     
     
     key := readString(reader)     // Enter the key(date) that user want to see.
-    news,hash = Get(key)
+    news,hash := Get(key)
+    
+    // Displaying contents
+    fmt.Println("News content for date "+key+"  :  "+news)
+    fmt.Println("Hash Value of news : "+hash)
 }
 
 // Reading input functions
