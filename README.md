@@ -10,5 +10,5 @@ We will be creating a program public.go which has news data which is accessable 
     
 Also the admin can add the new news to the public data with the help of userid and password.
 
-UserId : arijit.Das
-Passwowd : UITBU.Arijit
+**UserId : arijit.Das**  
+**Passwowd : UITBU.Arijit**
