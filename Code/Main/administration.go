@@ -21,10 +21,8 @@ type Data struct {
 var keyValue = map[string]Data{}  // Hash map to store key(dates in string) and its news content(in string type) and its hash value(in string type)
 
 //Function that takes key, value pair as an argument and 
-//store it in key,value in keyValue hash map key hash in keyHash hash map 
+//store it in key,value and its hash256 in keyValue hash map. 
 func Put(key string, value string){
-    
-    
     
     h := sha256.New()
     h.Write([]byte(value))
@@ -40,7 +38,7 @@ func Put(key string, value string){
 }
 
 
-// Function to return actual news and its Hash Value
+// Function to return news contnet and its Hash Value
 func Get(key string) (string, string){
     
     return keyValue[key].val,keyValue[key].hash
