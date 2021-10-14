@@ -1,55 +1,81 @@
 package main
-
 import (
-    "crypto/sha256"
-    "fmt"
+	"bufio"
+	//"bytes"
+	"fmt"
+	//"math"
+	"os"
+	"crypto/sha256"
+	"encoding/base64"
 )
 
-type KVStore interface {
-    
-	// Given a key, retrieve the corresponding value from the store.
-	Get(key string) (value []byte, exists bool)
-	
-	// Save the given value for the given key into store.
-	Put(key string, value []byte)
-	
-	// Delete the given key from the store.
-	Delete(key string)
-	
-	// Calculate the fingerprint for the store. Any two stores which have the same data, should have the same fingerprint, and vice-versa.
-	Fingerprint() []byte
-}
-func Get(key string) (value []byte, exists bool) {
-    
-    exit := true
-    var val [5]byte
-    
-    return val,exit
-}
-func Put(key string, value []byte){
-    
-    
-}
-func Delete(key string){
-    
+var keyValue map[string]string
+var keyHash map[string]string
 
-}
-func Fingerprint() []byte{
+//Function that takes key, value pair as an argument and 
+//store it in key,value in keyValue hash map key hash in keyHash hash map 
+func Put(key string, value string){
     
-    var val [5]byte
+    h := sha256.New()
+    h.Write([]byte(value))
     
-    return val
+    sha := base64.URLEncoding.EncodeToString(h.Sum(nil))
+    
+    fmt.Println(sha)
+    keyValue[key] = value //storing key value in keyValue hash map
+    keyHash[key] = sha  // storing key hash in keyHash hash map 
 }
+
 
 
 func main() {
+  
+  
+  reader := bufio.NewReader(os.Stdin)
+  fmt.Println("Enter the number of key value pair to store in kv store")
+  num := readNum(reader)
+  
+  for i:=1;i<=num;i++{
+        
+        key := readString(reader)
+        val := readString(reader)
+        
+        Put(key,val)
+    }
     
-    text = "This is Afham fardeen"
-    text1 = text1+"m"
-    sh := sha256.Sum256([]byte(text))
-    sh1 := sha256.Sum256([]byte(text1))
-    fmt.Printf("%x\n", sh)
-    fmt.Printf("%x", sh1)
-    
-    
+    fmt.Println(keyValue)
+    fmt.Println(keyHash)
+}
+
+// Reading input functions
+func readString(reader *bufio.Reader) string {
+	s, _ := reader.ReadString('\n')
+	for i := 0; i < len(s); i++ {
+		if s[i] == '\n' {
+			return s[:i]
+		}
+	}
+	return s
+}
+
+func readNum(reader *bufio.Reader) (a int) {
+	bs, _ := reader.ReadBytes('\n')
+	readInt(bs, 0, &a)
+	return
+}
+
+func readInt(bytes []byte, from int, val *int) int {
+	i := from
+	sign := 1
+	if bytes[i] == '-' {
+		sign = -1
+		i++
+	}
+	tmp := 0
+	for i < len(bytes) && bytes[i] >= '0' && bytes[i] <= '9' {
+		tmp = tmp*10 + int(bytes[i]-'0')
+		i++
+	}
+	*val = tmp * sign
+	return i
 }
