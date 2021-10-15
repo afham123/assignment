@@ -11,7 +11,6 @@ import (
 	//"log"
 )
 
-
 type Data struct {
 	val string
 	hash string
@@ -56,7 +55,6 @@ func Get(key string) string{
 		return keyValue[key].val
 	}
 }
-
 
 //Update with new value
 func update(key string, val string){
@@ -127,8 +125,8 @@ func save(){
 //Function for userid password verification
 func check( usid string, pass string)bool{
 
-	if authentication[usid] { // will be false if userid is not in the map
-		if authentication[usid].password == pass{
+	if v, ok := authentication[usid]; ok {
+		if v.password == pass{
 			return true
 		}
 		return false
@@ -143,7 +141,8 @@ func put(key string, value string, h string) {
 	n.hash = h  // storing key hash in keyHash hash map
 
 	LocalkeyValue[key] = n
-	//fmt.Println(n)
+	keyValue[key] = n
+	save()
 }
 
 //Function to readin CSV file(local data).
@@ -157,7 +156,6 @@ func Readcsv() {
 	}
 	csvfile.Seek(0, 0)
 	defer csvfile.Close()
-
 	reader := csv.NewReader(csvfile)
 
 	rawCSVdata, err := reader.ReadAll()
@@ -166,13 +164,16 @@ func Readcsv() {
 	}
 
 	for l, record := range rawCSVdata {
-
 		// for first row, build the header slice
 		if l == 0{
 			continue
 		}
 		put(record[0],record[1],record[2])
-		//fmt.Println(record[0])
+	}
+
+	// Copy from the Local data to the public data.
+	for key, value := range LocalkeyValue {
+		keyValue[key] = value
 	}
 }
 
@@ -182,7 +183,7 @@ func main() {
 
 	var user1 Authentication
 	user1.password = "UITBU.Arijit"
-	authentication["arijit.Das"].password = user1// Adding user id and password
+	authentication["arijit.Das"] = user1// Adding user id and password
 	Readcsv()// Reading the local csv data.
 
 	reader := bufio.NewReader(os.Stdin)
@@ -197,9 +198,8 @@ func main() {
 		switch num {
 		case 1:
 			fmt.Printf("Enter user : ")
-			fmt.Printf("Enter password : ")
-
 			usid := readString(reader)
+			fmt.Printf("Enter password : ")
 			pass := readString(reader)
 
 			if check(usid,pass){
@@ -207,6 +207,8 @@ func main() {
 				key := readString(reader)
 				val := readString(reader)
 				Put(key,val)    // saving key value pair after authentication.
+			}else{
+				fmt.Println("Access denied")
 			}
 			break
 		case 2:
