@@ -1,6 +1,8 @@
 package main
 import (
 	"bufio"
+	//"reflect"
+
 	//"bytes"
 	"fmt"
 	//"math"
@@ -122,18 +124,6 @@ func save(){
 	}
 }
 
-//Function for userid password verification
-func check( usid string, pass string)bool{
-
-	if v, ok := authentication[usid]; ok {
-		if v.password == pass{
-			return true
-		}
-		return false
-	}
-	return false
-}
-
 //Store key, value and hash, used for retrieving local data.
 func put(key string, value string, h string) {
 
@@ -142,7 +132,6 @@ func put(key string, value string, h string) {
 
 	LocalkeyValue[key] = n
 	keyValue[key] = n
-	save()
 }
 
 //Function to readin CSV file(local data).
@@ -177,6 +166,18 @@ func Readcsv() {
 	}
 }
 
+//Function for userid password verification
+func check( usid string, pass string)bool{
+
+	if v, ok := authentication[usid]; ok {
+		if v.password == pass{
+			fmt.Println("Authentication passed")
+			return true
+		}
+		return false
+	}
+	return false
+}
 
 // Driver Function
 func main() {
@@ -192,21 +193,24 @@ func main() {
 	fmt.Println("Enter 1 to add new Data")
 	fmt.Println("Enter 2 to read news")
 	fmt.Println("Enter 3 to exit")
+	fmt.Println("Enter your choice")
 	num := readNum(reader)
 
 	for num !=3{
+
 		switch num {
 		case 1:
-			fmt.Printf("Enter user : ")
+			fmt.Printf("Enter user id : ")
 			usid := readString(reader)
 			fmt.Printf("Enter password : ")
 			pass := readString(reader)
 
-			if check(usid,pass){
+			if check(usid[:len(usid)-1],pass[:len(pass)-1]){
 				fmt.Println("Enter the key value pair")
 				key := readString(reader)
 				val := readString(reader)
 				Put(key,val)    // saving key value pair after authentication.
+				fmt.Println("Key Value pair added")
 			}else{
 				fmt.Println("Access denied")
 			}
@@ -225,6 +229,7 @@ func main() {
 		if num == 3{
 			break            // Breaking the switch case if the user enters 3
 		}else{
+			fmt.Println("Enter your choice")
 			num = readNum(reader)
 		}
 	}
