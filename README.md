@@ -37,7 +37,11 @@ We have firstly restored the admin user id and password so that only he gets the
 * update(key, val) : Update with new value for a key.
 * mekletree() : Give the snapshot of the data using merkle tree.
 * func hashfunc(st) : Return the hash value of a data.
-    
+
+**Note**
+Merekle tree function is used in the program to take snapshot of data. If the current snapshot matches the initial snapshot then we could know that the data is not being changed. It is called by figureprint function which returns true and false, after comparing intial and current snapshot.
+
+
 Also the admin can add the new news to the public data with the help of userid and password.
 
 **UserId : arijit.Das**  
