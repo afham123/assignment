@@ -17,6 +17,13 @@ type Data struct {
 	val string
 	hash string
 }
+// Structure to create node for merkle tree.
+type Node struct {
+	value string
+	hash string
+	left *Node
+	right *Node
+}
 
 type Authentication struct {
 	password string
@@ -25,7 +32,7 @@ type Authentication struct {
 var keyValue = map[string]Data{}  // Hash map to store key(dates in string) and its news content(in string type) and its hash value(in string type)
 var LocalkeyValue = map[string]Data{}   //Local keyValue data.
 var authentication = map[string]Authentication{}    // Hash map to store userid password.
-
+var root Node
 
 //Function that takes key, value pair as an argument and
 //store it in key,value and its hash256 in keyValue hash map.
@@ -49,7 +56,7 @@ func Put(key string, value string){
 // Function to return news contnet and its Hash Value
 func Get(key string) string{
 
-	if Fingerprint(key,keyValue[key].val){
+	if Fingerprint(){
 		return keyValue[key].val
 	}else{
 		Delete(key)
@@ -57,29 +64,30 @@ func Get(key string) string{
 		return keyValue[key].val
 	}
 }
+//Function to create sha256 value.
+func hashfunc(st string)string{
+
+	h := sha256.New()
+	h.Write([]byte(st))
+	return base64.URLEncoding.EncodeToString(h.Sum(nil))
+}
+
 
 //Update with new value
 func update(key string, val string){
 
-	h := sha256.New()
-	h.Write([]byte(val))
-	sha := base64.URLEncoding.EncodeToString(h.Sum(nil))
-
 	n := keyValue[key]
 	n.val = val
-	n.hash = sha
+	n.hash = hashfunc(val)
 	keyValue[key] = n
 }
 
 //Function to check the fingerprint and return a boolean result.
 // That is true if mached and false if does not matched.
-func Fingerprint(key string, val string) bool{
+func Fingerprint() bool{
 
-	h := sha256.New()
-	h.Write([]byte(val))
-	sha := base64.URLEncoding.EncodeToString(h.Sum(nil))
-
-	if LocalkeyValue[key].hash == sha { // will be false if hash value of original content matches the hash value of news content.
+	currentSnapshot := merkletree(keyValue)
+	if root.hash == currentSnapshot.hash { // will be false if hash value of initial snapshot matches the hash value of current snapshot.
 		return true
 	}
 	return false
@@ -159,7 +167,6 @@ func Readcsv() {
 		}
 		put(record[0],record[1],record[2])
 	}
-
 	// Copy from the Local data to the public data.
 	for key, value := range LocalkeyValue {
 		keyValue[key] = value
@@ -179,6 +186,51 @@ func check( usid string, pass string)bool{
 	return false
 }
 
+//Building merkle tree for verification of data.
+func merkletree (data map[string]Data)Node{
+
+	//var root Node
+	leafNodes := make(map[int]Node)  //Store all the leaf nodes
+	i:=0
+
+	for key := range data {
+		var node Node
+		node.value = key + LocalkeyValue[key].val
+		node.hash = hashfunc(node.value)
+		leafNodes[i] = node
+		i+=1
+	}
+
+	for len(leafNodes) !=1{
+		temp := make(map[int]Node)
+		j:=0
+		for i=0; i<len(leafNodes); i+=2 {
+			node1 := leafNodes[i]
+			var node2 Node
+			if i+1 < len(leafNodes) {
+				node2 = leafNodes[i+1]
+			} else{
+				temp[j] = leafNodes[i]
+				break
+			}
+
+			var parent Node    // initialize parent node and adding values to the
+			parent.value = node1.value + node2.value
+			parent.hash = hashfunc(parent.value)
+			parent.left = &node1
+			parent.right = &node2
+			temp[j] = parent
+			j+=1
+		}
+		leafNodes = temp
+	}
+
+	var root Node
+	root = leafNodes[0]
+
+	return root
+}
+
 // Driver Function
 func main() {
 
@@ -186,6 +238,7 @@ func main() {
 	user1.password = "UITBU.Arijit"
 	authentication["arijit.Das"] = user1// Adding user id and password
 	Readcsv()// Reading the local csv data.
+	root =merkletree(LocalkeyValue)           // Take initial snapshot of the data
 
 	reader := bufio.NewReader(os.Stdin)
 
@@ -210,6 +263,7 @@ func main() {
 				key := readString(reader)
 				val := readString(reader)
 				Put(key,val)    // saving key value pair after authentication.
+				root = merkletree(LocalkeyValue)   //Updating the snapshot of tree
 				fmt.Println("Key Value pair added")
 			}else{
 				fmt.Println("Access denied")
